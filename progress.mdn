@@ -1,0 +1,24 @@
+028_bship_glass
+0912 2023
+1243
+jeg vil hackse noget snydekode igennem. snydekode lyder bedre end pseudokode. approksimering af del-egenskaber. ifl. socket.io tutorial og guide
+
+npm init vite 028_bship_glass
+cd 028
+npm install
+npm run dev
+
+npm i socket.io express mongodb express-session bcrypt
+
+1252
+jeg tog denne streng og gav den til chatgpt, og den gav mig et færdigt program(?)
+
+well the log is saved reagrdless.
+
+1112 2023
+0721
+npm init
+i servermappen for a tlave package.json så jeg kunne sætte type module forat bruge import statements af express
+npm i express
+
+jeg skal lave auth, ikke? så ... frontend, sende password.
