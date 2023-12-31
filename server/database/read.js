@@ -2,7 +2,12 @@ import db from "./databaseConnection.js";
 
 // const foundShops = await db.shops.find({ city: "Hellerup" }).toArray();
 async function readUserNameAndPasswordForAuthentication(username, password) {
-    return await db.users.find().toArray();    
+    console.log("028 server db read being hit")
+    const data = await db.users.find({name: username}).toArray();    
+    console.log("028 server db read data:", data)
+    return data;
 };
 
-export default readUserNameAndPasswordForAuthentication
+export default { 
+    User: readUserNameAndPasswordForAuthentication
+}

@@ -9,14 +9,14 @@ let inputEmail = "";
 // console.log("028 src app dot env?", process.env);
 
 function sendLogin() {
-  let usernameAndPassword = { name: inputName, password: inputPassword };
+  let usernameAndPassword = { username: inputName, password: inputPassword };
   console.log("src app 1: sendinput: usernamenandpassword:", usernameAndPassword);
-  postData("http://localhost:8080/auth//login/password", usernameAndPassword);
+  postData("http://localhost:8080/auth/login/password", usernameAndPassword);
   clearInputFields();
 }
 
 async function sendRegistration() {
-  let usernameAndPasswordAndEmail = { name: inputName, password: inputPassword, email: inputEmail };
+  let usernameAndPasswordAndEmail = { username: inputName, password: inputPassword, email: inputEmail };
   console.log("028 bship src app 2: hitting sendRegistration, data:", usernameAndPasswordAndEmail);
   // fetch her -- send data til backend, som skal tjekke navn og inputPassword. Navnm skal være unikt -- email skal være email -- password skal ikke være blæank
   postData("http://localhost:8080/auth/register", usernameAndPasswordAndEmail);
@@ -38,7 +38,9 @@ async function postData(url, data) {
       "Content-Type": "application/json",
       "Access-Control-Allow-Credentials": true,
     },
-    body: JSON.stringify(data)
+   body: JSON.stringify(data)
+
+    
   }
 
   const response = await fetch(url, postFetchInit);
@@ -75,6 +77,8 @@ Not a member yet? REGISTER.
 <button on:click={sendRegistration}>Send registry-input </button>
 
 huskeliste git things ...fedt mand. S
+
+
 </main>
 
 <style>

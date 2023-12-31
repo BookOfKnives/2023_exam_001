@@ -4,7 +4,7 @@
 
 // a basisc epxress thing ey
 //1112 2023 basic express
-
+import passport from "passport";
 import express from 'express';
 const app = express();
 import cors from 'cors';
@@ -16,14 +16,18 @@ app.use(cors(corsInit));
 
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
-import mongoClient from "./database/databaseConnection.js"
+import db from "./database/databaseConnection.js"
 app.use(session({
+  secret: "mysecret",
     store: MongoStore.create({
     //   client: mongoClient,
     mongoUrl: "mongodb://localhost:27017",
       dbName: 'AuthDb'
     })
   }));
+app.use(passport.authenticate('session'));
+import authenticationRouter from "./lib/authenticationRouter.js";
+app.use("/auth", authenticationRouter);
 
 import bcrypt from "bcrypt";
 
@@ -32,13 +36,20 @@ const port = process.env.PORT || 8080;
 
 // import authRouter from "authRouter.js"
 
+app.get("/welcome", (req, res) => {
+  console.log("028 server says GET WELCOME");
+  res.send({data: "welcome"});
+})
 
+app.get("/user", async (req, res) => {
+  const data = await db.users.find().toArray();
+  console.log("028 server get users db:", data)
+})
 
-app.get("/users/getsession/", (req, res) => { 
+app.get("/login", (req, res) => { 
+  res.send({data: "hello?? from server get login"})
 });
 
-import authenticationRouter from "./lib/authenticationRouter.js";
-app.use("/auth", authenticationRouter);
 
 // app.post("/newuserregistration", express.json(), async (req, res) => {
 //     usersDb(req.body.name, req.body.email, req.body.passwordHash);
@@ -48,6 +59,3 @@ app.use("/auth", authenticationRouter);
 
 app.listen(port, () => {console.log("server listen bship28 on port:", port)})
 
-// 2012 2023
-// 1522
-// jeg har nu sendt nye brugers password etc til databasen -- så det er registaretion., nu skal man kunne auth'e, ok?

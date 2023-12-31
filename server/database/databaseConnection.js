@@ -5,6 +5,7 @@ const mongoClient = new MongoClient(dbUrl);
 const dbName = process.env.DBNAME || "AuthDb";
 
 const db = mongoClient.db(dbName);
+
 // console.log("028 databaseconnection.js db.getMongo():", .getMongo());
 
 // const dataBase = async function dbMain() {
@@ -17,6 +18,5 @@ const db = mongoClient.db(dbName);
 // }
 
 export default {
-    users: db.collection("users"),
-    mongoClient
+    users: db.collection('users')
 }

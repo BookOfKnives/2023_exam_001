@@ -2,18 +2,47 @@ import { Router, json } from "express";
 import { passwordStrength } from "check-password-strength";
 import bcrypt from "bcrypt";
 import passport from "passport";
-import LocalStrategy from "passport-local";
+import JsonStrategy from "passport-json";
 
-import db from "../database/read.js";
+import db from "../database/databaseConnection.js";
 import addUser from "../database/create.js";
 // import readUserNameAndPasswordForAuthentication from "../database/read.js";
 
 const router = Router();
 
+router.use(json());
+
+passport.use(new JsonStrategy(
+  async function(username, password, done) {
+    console.log("028 server auth 1");
+    //const data = db.users.find({name: username}).toArray();
+   try {
+     const user = await db.users.findOne({ name: username });
+     if (!user) {
+      return done(null, false); 
+    }
+     //if (!user.verifyPassword(password)) { return done(null, false); }
+          console.log("028 server auth 4");
+      return done(null, user);
+    }
+      catch (err) {
+          console.log("028 auth error!");
+          return done(err)
+        }
+      }
+    ));
+
+/*
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-    db.collection('users').find({name: username }, function(err, row) {
-      if (err) { return cb(err); }
-      if (!row) { return cb(null, false, { message: 'Incorrect username or password.' }); }
+  console.log("auth 028 -1 cryp")
+  dbRead.collection('users').findOne({name: "hans", password: "nyre1!" }, function(err, row) {
+      if (err) { 
+        console.log("auth 028 1 crype:  in pw:", err)
+        return cb(err); 
+      }
+      if (!row) { 
+        console.log("auth 028 2  crype: error in pw:", err)
+        return cb(null, false, { message: 'Incorrect username or password.' }); }
       
 
       //old crypt
@@ -27,17 +56,23 @@ passport.use(new LocalStrategy(function verify(username, password, cb) {
       });
     });
     */
+   /*
    bcrypt.compare(password, row.hashedPassword, function(err, hashedPassword) {
-     if (err) { return cb(err); }
-     if (!crypto.compare(row.hashedPassword, hashedPassword)) {
-       return cb(null, false, { message: 'Incorrect username or password.' });
-     }
+     if (err) { 
+       console.log("auth 028 3 crype: error in pw:", err)
+       return cb(err); 
+      }
+      if (!crypto.compare(row.hashedPassword, hashedPassword)) {
+        
+        console.log("auth 028 4 crype: wrong compare:", err)
+        return cb(null, false, { message: 'Incorrect username or password.' });
+      }
+      console.log("auth 028 5 cryp  it works:, row:", row)
      return cb(null, row);
    });
  });
 }));
-
-
+*/
 
 //old auth i made
 router.post("/register", json(), async (req, res) => { 
@@ -66,10 +101,13 @@ router.post("/register", json(), async (req, res) => {
     fetch("http://localhost:8080/auth/newuserregistration", postFetchInit);
 }) //end of old auth
 
-router.post('/login/password', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-  }));
+router.post('/login/password', 
+  passport.authenticate('json', { failureRedirect: '/login', failureMessage: true }),
+  function(req, res) {
+    console.log("028 auth router post login/password being hit")
+    res.redirect('/welcome');
+  });
+
 
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
