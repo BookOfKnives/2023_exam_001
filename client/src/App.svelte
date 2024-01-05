@@ -11,7 +11,7 @@ let inputEmail = "";
 function sendLogin() {
   let usernameAndPassword = { username: inputName, password: inputPassword };
   console.log("src app 1: sendinput: usernamenandpassword:", usernameAndPassword);
-  postData("http://localhost:8080/auth/login/password", usernameAndPassword);
+  postData("http://localhost:8080/login/password", usernameAndPassword);
   clearInputFields();
 }
 
@@ -19,7 +19,7 @@ async function sendRegistration() {
   let usernameAndPasswordAndEmail = { username: inputName, password: inputPassword, email: inputEmail };
   console.log("028 bship src app 2: hitting sendRegistration, data:", usernameAndPasswordAndEmail);
   // fetch her -- send data til backend, som skal tjekke navn og inputPassword. Navnm skal være unikt -- email skal være email -- password skal ikke være blæank
-  postData("http://localhost:8080/auth/register", usernameAndPasswordAndEmail);
+  postData("http://localhost:8080/register", usernameAndPasswordAndEmail);
   clearInputFields();
 }
 
@@ -77,6 +77,8 @@ Not a member yet? REGISTER.
 <button on:click={sendRegistration}>Send registry-input </button>
 
 huskeliste git things ...fedt mand. S
+
+
 
 
 </main>

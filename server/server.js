@@ -14,34 +14,46 @@ const corsInit = {
     credentials: true };
 app.use(cors(corsInit));
 
+import dotenv from "dotenv/config";
+
+const SECRET = process.env.SESSION_SECRET;
+
+
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
-import db from "./database/databaseConnection.js"
+
 app.use(session({
-  secret: "mysecret",
+  secret: SECRET,
     store: MongoStore.create({
-    //   client: mongoClient,
-    mongoUrl: "mongodb://localhost:27017",
+      mongoUrl: "mongodb://localhost:27017",
       dbName: 'AuthDb'
-    })
+    }),
+    cookie: {
+      sameSite: "none",
+      secure: false
+    },
+    resave: false,
+    saveUninitialized: true
   }));
 app.use(passport.authenticate('session'));
+
 import authenticationRouter from "./lib/authenticationRouter.js";
-app.use("/auth", authenticationRouter);
+app.use("/", authenticationRouter);
 
 import bcrypt from "bcrypt";
 
-import dotenv from "dotenv/config"; //use for session?
 const port = process.env.PORT || 8080;
 
 // import authRouter from "authRouter.js"
 
 app.get("/welcome", (req, res) => {
   console.log("028 server says GET WELCOME");
-  res.send({data: "welcome"});
+  if (req.session.user)   res.send({data: "welcome, 028 appget welcome user"}); //send det via sockets til frontendne og lad den håndtere resten. gamelogik, sudo ne?
+  else res.send({data: "you're not welcome, 028 appget welcome no user"})
 })
 
-app.get("/user", async (req, res) => {
+import db from "./database/databaseConnection.js"
+app.get("/user", async (req, res) => { //test func, delete?
   const data = await db.users.find().toArray();
   console.log("028 server get users db:", data)
 })

@@ -11,26 +11,25 @@ import addUser from "../database/create.js";
 const router = Router();
 
 router.use(json());
+let user;
 
 passport.use(new JsonStrategy(
   async function(username, password, done) {
-    console.log("028 server auth 1");
-    //const data = db.users.find({name: username}).toArray();
+    // console.log("028 server auth 1");
    try {
-     const user = await db.users.findOne({ name: username });
-     if (!user) {
-      return done(null, false); 
+      user = await db.users.findOne({ name: username });
+      //  console.log("028 server auth 1.1 user found:", user);
+      if (!user)  return done(null, false); 
+      const isPasswordReal = await bcrypt.compare(password, user.hashedPassword)
+      if (!isPasswordReal) return done(null, false)
     }
-     //if (!user.verifyPassword(password)) { return done(null, false); }
-          console.log("028 server auth 4");
-      return done(null, user);
+    catch (err) {
+          // console.log("028 auth error!");
+      return done(err)
     }
-      catch (err) {
-          console.log("028 auth error!");
-          return done(err)
-        }
-      }
-    ));
+  return done(null, user)
+  }
+));
 
 /*
 passport.use(new LocalStrategy(function verify(username, password, cb) {
@@ -82,7 +81,7 @@ router.post("/register", json(), async (req, res) => {
      }; 
     const hashedPw = await bcrypt.hash(req.body.password, 12);
     const newUser = {
-        name: req.body.name,
+        name: req.body.username,
         email: req.body.email,
         passwordHash: hashedPw
     };
@@ -96,25 +95,30 @@ router.post("/register", json(), async (req, res) => {
         },
         body: JSON.stringify(newUser)
     }
-    // console.log("bship server lib authrouter SyntaxError? 001 name:", newUser.name);
-    // console.log("bship server lib authrouter SyntaxError? 002 passwqore:", newUser.passwordHash);
-    fetch("http://localhost:8080/auth/newuserregistration", postFetchInit);
-}) //end of old auth
+    console.log("bship server lib authrouter SyntaxError? 001 name:", newUser);
+    console.log("bship server lib authrouter SyntaxError? 002 passwqore:", newUser.passwordHash);
+    fetch("http://localhost:8080/newuserregistration", postFetchInit);
+}) 
+router.post("/newuserregistration", json(), async (req, res) => {
+  addUser(req.body.name, req.body.email, req.body.passwordHash);
+  res.send("028 bship server newuserregistration hit!");
+});
 
 router.post('/login/password', 
-  passport.authenticate('json', { failureRedirect: '/login', failureMessage: true }),
-  function(req, res) {
-    console.log("028 auth router post login/password being hit")
+  passport.authenticate('json', { failureRedirect: '/login' }),
+  function(req, res) { 
+    // console.log("028 auth router post login/password being hit");
+    // req.session.numberSession = req.session.numberSession ?? 0;
+    // req.session.numberSession++;
+    req.session.user = user;
     res.redirect('/welcome');
   });
-
 
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
     cb(null, { id: user.id, username: user.username });
   });
 });
-
 passport.deserializeUser(function(user, cb) {
   process.nextTick(function() {
     return cb(null, user);
@@ -122,9 +126,6 @@ passport.deserializeUser(function(user, cb) {
 });
   
 //old registration endpoint
-router.post("/newuserregistration", json(), async (req, res) => {
-  addUser(req.body.name, req.body.email, req.body.passwordHash);
-  res.send("028 bship server newuserregistration hit!");
-});
+
 
 export default router;
